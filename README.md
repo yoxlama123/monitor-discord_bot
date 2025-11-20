@@ -71,7 +71,7 @@ Bot ilk çalıştığında otomatik olarak slash komutlarını sunucunuza deploy
 | `!listurl`| `!listurl veya !listurl [KATEGORİ]` | Tüm URL'leri veya sadece belirtilen kategoriyi listeler |
 
 **Listeleme Çıktısı Örneği**
-```json
+```
 Kategoria : sfw  Linklərin sayı : 24
 https://x.com/elonmusk
 https://instagram.com/elonmusk
@@ -82,15 +82,17 @@ https://instagram.com/elonmusk
  **➡️ Botun Gönderdiği İstek (Request Body)**
 
 Webhook'inizin kabul etmesi gereken JSON formatı:
+
 ```json
 {
-  "action"  : "addurl",        // "addurl" | "removeurl" | "listurl"
+  "action"  : "addurl",  
   "url"     : "https://example.com/username",
-  "category": "sfw"          // sadece addurl ve listurl'da kullanılır
+  "category": "sfw"
 }
 ```
-**⬅️ n8n'den Beklenen Yanıt (Response)**
+> `action` alanının alabileceği değerler: `"addurl"`, `"removeurl"`, `"listurl"`. `category` sadece addurl ve listurl'da kullanılır
 
+**⬅️ n8n'den Beklenen Yanıt (Response)**
 | İşlem | Beklenen JSON Yapısı | Not |
 |--|--|--|
 | `addurl` | `{ "message": "Başarıyla eklendi" }` | Bot, `message` alanını alıp kullanıcıya gösterir. |
