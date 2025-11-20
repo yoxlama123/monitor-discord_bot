@@ -1,0 +1,140 @@
+
+# 🤖 Discord URL Monitoring Botu
+
+Başlangıç seviyesinde, öğrenme ve test amaçlı hazırlanmış sade bir Discord botu.
+Bot, yalnızca belirlediğiniz kanalda çalışır ve tüm ekleme/silme/listeleme işlemlerini **n8n webhook** üzerinden gerçekleştirir. Hem slash komutları (`/`) hem de klasik prefix komutları (`!`) destekler.
+
+![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green) ![Discord.js](https://img.shields.io/badge/Discord.js-v14-blue) ![License](https://img.shields.io/badge/License-MIT-yellow)  ![Status](https://img.shields.io/badge/Status-Çalışır-brightgreen) 
+
+## 🌐 Desteklenen Platformlar
+
+* `instagram.com`
+* `www.instagram.com` 
+* `x.com` 
+* `www.x.com`
+
+## ✨ Özellikler
+
+* **Kanal Kısıtlaması:** Sadece belirlenen kanalda (`CHANNEL_A_ID`) çalışır – yanlış kanalda komut kullanımı engellenir.
+* **Çift Komut Desteği:** Slash komutlar (`/addurl`, `/removeurl`, `/listurl`) ve prefix komutlar (`!addurl`, `!removeurl`, `!listurl`) tam uyumlu. 
+* **Kategorili Yönetim:** URL'ler kategorilere göre yönetilir (örnek: `sfw`, `nsfw`, `meme`, `haber` vb.). 
+* **n8n Entegrasyonu:** Tamamen dış veritabanı entegrasyonu – botun kendi içinde veri tutmaz.
+*  **Gizli Yanıt:** Ephemeral reply (geçici cevap) ile slash komut cevapları sadece komutu kullanan kişi görür. 
+*  **Otomatik Deploy:** Otomatik slash komut deploy (bot ilk çalıştığında sunucuya komutları yükler). 
+* **Timeout Koruması:** n8n yanıt vermezse kullanıcıya hata bildirilir (10 saniye limit).
+
+## 🛠 Gereksinimler
+
+* **Node.js** 18 veya üstü 
+* **Discord Bot Token** 
+* **n8n Webhook URL** (POST ile `{ action, url, category }` alacak şekilde ayarlanmış olmalı)
+
+## ⬇️ Kurulum
+
+1. Repoyu klonlayın veya dosyaları indirin
+```bash
+git clone https://github.com/KULLANICI_ADINIZ/discord-url-bot.git
+cd discord-url-bot
+```
+2. Gerekli paketleri yükleyin
+```bash
+npm install discord.js axios discord-api-types dotenv
+```
+3. Proje kök dizinine .env dosyası oluşturun ve aşağıdaki değişkenleri ekleyin:
+```bash
+BOT_TOKEN=buraya_discord_bot_tokeniniz
+CLIENT_ID=buraya_botun_client_id_si
+GUILD_ID=buraya_sunucu_id_si
+CHANNEL_A_ID=botun_sadece_burada_çalışacağı_kanal_id
+N8N_WEBHOOK=https://senin-n8n-domain.com/webhook/url-manager
+```
+4. Botu başlatın
+```bash
+node index.js
+```
+Bot ilk çalıştığında otomatik olarak slash komutlarını sunucunuza deploy edecektir. İlk çalıştırmada konsolda "Slash komutları başarıyla deploy edildi!" yazısını görmelisiniz.
+
+## 💬 Kullanım & Komutlar
+### Slash Komutları (Tavsiye Edilen)
+|Komut| Kullanım Örneği | Açıklama | 
+|--|--|--|
+| `/addurl` | `/addurl url: [URL] category: [KATEGORİ]` | URL'yi belirtilen kategoriye ekler |
+| `/removeurl`| `/removeurl url: [URL]` | URL'yi tüm kategorilerden siler |
+| `/listurl`| `/listurl veya /listurl category: [KATEGORİ]` | Tüm URL'leri veya sadece belirtilen kategoriyi listeler |
+
+> Slash komutların cevapları ephemeral (sadece siz görürsünüz).
+
+### Prefix Komutları (Eski Tarz)
+|Komut| Kullanım Örneği | Açıklama | 
+|--|--|--|
+| `!addurl` | `!addurl [URL] [KATEGORİ]` | URL'yi belirtilen kategoriye ekler |
+| `!removeurl`| `!removeurl [URL]` | URL'yi tüm kategorilerden siler |
+| `!listurl`| `!listurl veya !listurl [KATEGORİ]` | Tüm URL'leri veya sadece belirtilen kategoriyi listeler |
+
+**Listeleme Çıktısı Örneği**
+```
+Kategoria : sfw  Linklərin sayı : 24
+https://x.com/elonmusk
+https://instagram.com/elonmusk
+...
+```
+## 🧩 n8n Webhook Beklenen Yapı
+
+ **➡️ Botun Gönderdiği İstek (Request Body)**
+
+Webhook'inizin kabul etmesi gereken JSON formatı:
+```json
+{
+  "action"  : "addurl",        // "addurl" | "removeurl" | "listurl"
+  "url"     : "https://example.com/username",
+  "category": "sfw"          // sadece addurl ve listurl'da kullanılır
+}
+```
+**⬅️ n8n'den Beklenen Yanıt (Response)**
+
+| İşlem | Beklenen JSON Yapısı | Not |
+|--|--|--|
+| `addurl` | `{ "message": "Başarıyla eklendi" }` | Bot, `message` alanını alıp kullanıcıya gösterir. |
+| `removeurl` | `{ "message": "Başarıyla silindi" }` | Bot, `message` alanını alıp kullanıcıya gösterir. |
+|`listurl`|`[ { "urls": "https://x.com/elonmusk" },{ "urls": "https://instagram.com/elonmusk" },...]`|Yanıtın mutlaka URL'leri içeren `urls` anahtarına sahip JSON nesnelerinden oluşan bir **dizi** olması gerekir.|
+
+> Eğer tek bir obje dönerse bot otomatik olarak dizi haline çevirir.
+
+
+
+## 🚨 Hata Durumları ve Çözümler
+| Hata Mesajı | Muhtemel Sebep | Çözüm  |
+|--|--|--|
+| `Hata! n8n kontrol et.` | n8n webhook'e ulaşılamadı veya timeout | n8n'in çalıştığından, webhook URL'nin doğru olduğundan ve 10 saniye içinde yanıt verdiğinden emin olun. |
+|`URL eksik!`|Komutta URL belirtilmemiş|Komut formatını kontrol edin (`/addurl url: [URL]...` veya `!addurl [URL]...`).|
+|`Slash komutlar görünmüyor`|Bot yeniden başlatılmadı veya izin eksik|Botu yeniden başlatın ve Bot davet bağlantınızda `applications.commands` izninin olduğundan emin olun.n|
+
+## 🚀 Gelecek Özellikler / Yol Haritası
+
+Aşağıdaki özellikler, botun kullanıcı deneyimini, güvenliğini ve yönetim kolaylığını artırmak amacıyla ileriye dönük olarak planlanan geliştirmelerdir:
+
+### 🛡️ Güvenlik ve Veri Kalitesi
+
+* **Yetkilendirme ve İzinler:** Komutları sadece belirli Discord rollerine veya yetkili kullanıcılara kısıtlama.
+* **URL Doğrulama & Duplicate Engelleme:** `addurl` komutunda URL formatını kontrol etme ve aynı URL'nin tekrar eklenmesini önleme.
+
+### 📈 Kullanıcı Deneyimi ve Ölçeklenebilirlik
+
+* **Sayfalama (Pagination):** Çok sayıda URL listeleme sonucunu Discord'un mesaj limitini aşmayacak şekilde sayfalara ayırma.
+* **Gelişmiş Hata Raporlama:** n8n'den gelen hata mesajlarını yakalayarak kullanıcıya "Hata! n8n kontrol et" yerine daha anlaşılır ve spesifik geri bildirimler sunma.
+* **/help ve !help Komutları:** Botun tüm özelliklerini ve komutlarının kullanım şekillerini içeren kolay erişilebilir bir yardım menüsü ekleme.
+* **Daha Fazla Dil Desteği:** Botun tüm çıktılarını ve komut açıklamalarını çok dilli (i18n) hale getirme.
+
+### ⚙️ Yönetim ve Esneklik
+
+* **Kategori Oluşturma/Silme Komutları:** Komutlar aracılığıyla yeni kategoriler tanımlama ve mevcut kategorileri kaldırma yeteneği.
+* **Web Panel Entegrasyonu:** URL listelerini, kategorileri ve bot ayarlarını Discord dışında, görsel bir arayüz (Web Dashboard) üzerinden yönetme imkanı sunma.
+
+## 🛑 Uyarılar
+-   Sadece **Instagram** ve **X** linkleri kabul edilir.
+-  Başlangıç seviyesi proje olup, kapsamlı hata kontrolü sınırlıdır.
+-   Üretim (public) ortamında kullanmanız **önerilmez**.
+-   Kişisel sunucular ve test için uygundur.
+
+
+**MIT Lisansı altında lisanslanmıştır – istediğiniz gibi kullanın, değiştirin, dağıtın.**
