@@ -71,7 +71,7 @@ Bot ilk çalıştığında otomatik olarak slash komutlarını sunucunuza deploy
 | `!listurl`| `!listurl veya !listurl [KATEGORİ]` | Tüm URL'leri veya sadece belirtilen kategoriyi listeler |
 
 **Listeleme Çıktısı Örneği**
-```
+```json
 Kategoria : sfw  Linklərin sayı : 24
 https://x.com/elonmusk
 https://instagram.com/elonmusk
