@@ -4,14 +4,14 @@
 Başlangıç seviyesinde, öğrenme ve test amaçlı hazırlanmış sade bir Discord botu.
 Bot, yalnızca belirlediğiniz kanalda çalışır ve tüm ekleme/silme/listeleme işlemlerini **n8n webhook** üzerinden gerçekleştirir. Hem slash komutları (`/`) hem de klasik prefix komutları (`!`) destekler.
 
-![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green) ![Discord.js](https://img.shields.io/badge/Discord.js-v14-blue) ![License](https://img.shields.io/badge/License-MIT-yellow)  ![Status](https://img.shields.io/badge/Status-Çalışır-brightgreen) 
+![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green) ![Discord.js](https://img.shields.io/badge/Discord.js-v14-blue) ![License](https://img.shields.io/badge/License-MIT-yellow) ![Status](https://img.shields.io/badge/Status-Çalışır-brightgreen)
 
 ## 🌐 Desteklenen Platformlar
 
-* `instagram.com`
-* `www.instagram.com` 
-* `x.com` 
-* `www.x.com`
+- `instagram.com`
+- `www.instagram.com`
+- `x.com`
+- `www.x.com`
 
 ## ✨ Özellikler
 
